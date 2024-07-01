@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.interpolate import interp2d
+from scipy.interpolate import RectBivariateSpline
 import pkg_resources
 
 IEAA_DATA_PATH = pkg_resources.resource_filename('MagPy.Ionisation',\
@@ -68,4 +68,4 @@ class IaeaTable:
         self.Z = np.array(Z)
         self.ne = np.array(ne)
         self.Te = np.array(Te[0:36])
-        self.model = interp2d(self.Te, self.ne, self.Z)
+        self.model = RectBivariateSpline(self.Te, self.ne, self.Z.T)[0,0]
