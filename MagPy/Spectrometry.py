@@ -178,7 +178,7 @@ class Bundle:
         y1 = self.off + self.num*self.sp
         return x0, x1, y0, y1
 
-    def draw_split(self, spectrometer, vmin = 800, vmax=6000):
+    def draw_split(self, spectrometer, vmin = 800, vmax=6000, y_lims=None):
         ''' Draws details of the way data from the spectrograph is split, 
         to aid in debugging/analysis. 
         '''
@@ -196,15 +196,28 @@ class Bundle:
         Y = (y0+y1)/2
         for y in Y:
             ax2.axhline(y, 0, 1 , c='r', ls='--', lw=1)
+        if y_lims is not None:
+            ymin, ymax=y_lims
+            ax1.set_ylim(ymax, ymin)
+            isClip=True
+        else:
+            isClip=False
 
         i = 0
         while(i<len(y0)):
             self.draw_rect(ax1, self.l0, self.l1, y0[i], y1[i])
             s = self.get_fiber_name(i)
-            ax2.text(1.05, Y[i], s, c='r')
+            if isClip:
+                y=Y[i]
+                if y<ymax:
+                    if y>ymin:
+                        ax2.text(1.05, y, s, c='r')
+            else:
+                ax2.text(1.05, Y[i], s, c='r')
             i += 1
         x0, x1, y0, y1 = self.get_dark_bounds()
         self.draw_rect(ax1,  x0, x1, y0, y1, c='b')
+
         ax1.set_xlabel(r'$\lambda \; [nm]$')
         ax1.set_ylabel(r'Position [Px]')
         ax2.set_xlabel(r'Intensity [Arb]')
